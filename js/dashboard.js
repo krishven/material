@@ -1,4 +1,16 @@
-app.controller('cards', function($scope, $window, $http) {
+app.controller('dashboard', function($scope, $interval, $http) {
+	$scope.reason = false;
+	$scope.alarms = false;
+	$scope.storageOpt = false;
+	$scope.reclam = false;
+	$scope.temp = 'Yes';
+
+	$scope.callAtInterval = function() {
+        $scope.temp = Math.random().toString(36).substr(2, 5);
+    }
+
+    $interval( function(){ $scope.callAtInterval(); }, 3000);
+
 	//Convert bytes in string to float
 	$scope.getColor = function(str) {
 		if(str == 'not ready' || str == 'stopped' || str == 'Unknown')
@@ -24,11 +36,6 @@ app.controller('cards', function($scope, $window, $http) {
 		else
 			return num;
 	}
-
-	$scope.reason = false;
-	$scope.alarms = false;
-	$scope.storageOpt = false;
-	$scope.reclam = false;
 
 	$scope.result = {
 		"cloudInformation": {

@@ -18,8 +18,7 @@
     <meta name="msapplication-TileImage" content="images/favicon/mstile-144x144.png">
     <!-- For Windows Phone -->
     <!-- CORE CSS-->
-    <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection">
-    <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection">
+    <link href="build/styles.css" type="text/css" rel="stylesheet" media="screen,projection">
     <!-- INCLUDED PLUGIN CSS ON THIS PAGE -->
     <link href="plugins/perfect-scrollbar/perfect-scrollbar.css" type="text/css" rel="stylesheet" media="screen,projection">
     <link href="plugins/morris-chart/morris.css" type="text/css" rel="stylesheet" media="screen,projection">
@@ -131,16 +130,16 @@
                 <!--start container-->
                 <div class="container">
                     <!--card widgets start-->
-                    <div id="card-widgets" ng-controller="cards">
+                    <div id="card-widgets" ng-controller="dashboard">
                         <div class="row">
                             <div class="col s12 m12 l4">
                                 <div ng-show="alarms" class="card red darken-4">
                                     <div class="card-content white-text">
-                                        <span class="card-title">Alarms Triggered</span>
+                                        <span class="card-title">Alarms Triggered {{ temp }}</span>
                                         <table class="bordered">
                                         <tr ng-repeat="alarm in result.alarmsTriggered">
-                                        <td>{{alarm.name}}</td>
-                                        <td>{{alarm.status}}</td>
+                                            <td>{{alarm.name}}</td>
+                                            <td>{{alarm.status}}</td>
                                         </tr>
                                         </table>
                                     </div>
