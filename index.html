@@ -135,7 +135,7 @@
                             <div class="col s12 m12 l4">
                                 <div ng-show="alarms" class="card red darken-4">
                                     <div class="card-content white-text">
-                                        <span class="card-title">Alarms Triggered {{ temp }}</span>
+                                        <span class="card-title">Alarms Triggered</span>
                                         <table class="bordered">
                                         <tr ng-repeat="alarm in result.alarmsTriggered">
                                             <td>{{alarm.name}}</td>
@@ -333,7 +333,7 @@
     <!--plugins.js - Some Specific JS codes for Plugin Settings-->
     <script type="text/javascript" src="js/plugins.js"></script>
     <!-- Toast Notification -->
-    <script type="text/javascript">
+    <!-- <script type="text/javascript">
     // Toast Notification
     $(window).load(function() {
         setTimeout(function() {
@@ -346,7 +346,7 @@
             Materialize.toast('<span>New data to be backed up found.</span><a class="btn-flat yellow-text" href="">Backup<a>', 3000);
         }, 15000);
     });
-    </script>
+    </script> -->
 </body>
 
 </html>

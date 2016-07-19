@@ -40,6 +40,6 @@ module.exports = function(grunt) {
 
 	grunt.loadNpmTasks('grunt-contrib-concat'); //To concatenate files
 	grunt.loadNpmTasks('grunt-contrib-watch'); //To watch for any changes and do concatenation automatically
-	grunt.loadNpmTasks('grunt-contrib-connect');//To live reload after changes
+	grunt.loadNpmTasks('grunt-contrib-connect'); //To live reload after changes
 	grunt.registerTask('default', ['concat', 'connect', 'watch']);
 }
