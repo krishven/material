@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="msapplication-tap-highlight" content="no">
-    <meta name="description" content="AltaVault Cloude Storage">
-    <meta name="keywords" content="AltaVault Cloude Storage">
+    <meta name="description" content="AltaVault Cloud Storage">
+    <meta name="keywords" content="AltaVault Cloud Storage">
     <title>AltaVault Stats Engine</title>
     <!-- Favicons-->
     <link rel="icon" href="images/favicon/favicon.png" sizes="32x32">
@@ -19,9 +19,10 @@
     <!-- For Windows Phone -->
     <!-- CORE CSS-->
     <link href="build/styles.css" type="text/css" rel="stylesheet" media="screen,projection">
+    <!-- <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection">
+    <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"> -->
     <!-- INCLUDED PLUGIN CSS ON THIS PAGE -->
-    <link href="plugins/perfect-scrollbar/perfect-scrollbar.css" type="text/css" rel="stylesheet" media="screen,projection">
-    <link href="plugins/chartist-js/chartist.min.css" type="text/css" rel="stylesheet" media="screen,projection">
+    <link href="perfect-scrollbar/perfect-scrollbar.css" type="text/css" rel="stylesheet" media="screen,projection">
 </head>
 
 <body ng-app="altavault">
@@ -40,16 +41,6 @@
                         <i class="mdi-action-search"></i>
                         <input type="text" name="Search" class="header-search-input z-depth-2" placeholder="Explore AltaVault" />
                     </div>
-                    <ul class="right hide-on-med-and-down">
-                        <li><a href="javascript:void(0);" class="waves-effect waves-block waves-light toggle-fullscreen"><i class="mdi-action-settings-overscan"></i></a>
-                        </li>
-                        <li><a href="javascript:void(0);" class="waves-effect waves-block waves-light"><i class="mdi-navigation-apps"></i></a>
-                        </li>
-                        <li><a href="javascript:void(0);" class="waves-effect waves-block waves-light"><i class="mdi-social-notifications"></i></a>
-                        </li>
-                        <li><a href="#" data-activates="chat-out" class="waves-effect waves-block waves-light chat-collapse"><i class="mdi-communication-chat"></i></a>
-                        </li>
-                    </ul>
                 </div>
             </nav>
         </div>
@@ -71,44 +62,38 @@
                             </div>
                             <div class="col s8 m8 l8">
                                 <ul id="profile-dropdown" class="dropdown-content">
-                                    <li><a href="#"><i class="mdi-action-face-unlock"></i> Profile</a>
-                                    </li>
-                                    <li><a href="#"><i class="mdi-action-settings"></i> Settings</a>
-                                    </li>
                                     <li><a href="#"><i class="mdi-communication-live-help"></i> Help</a>
                                     </li>
                                     <li class="divider"></li>
-                                    <li><a href="#"><i class="mdi-action-lock-outline"></i> Lock</a>
-                                    </li>
                                     <li><a href="#"><i class="mdi-hardware-keyboard-tab"></i> Logout</a>
                                     </li>
                                 </ul>
-                                <a class="btn-flat dropdown-button waves-effect waves-light white-text profile-btn" href="#" data-activates="profile-dropdown">First Last<i class="mdi-navigation-arrow-drop-down right"></i></a>
+                                <a class="btn-flat dropdown-button waves-effect waves-light white-text profile-btn" href="#" data-activates="profile-dropdown">Firstname Lastname<i class="mdi-navigation-arrow-drop-down right"></i></a>
                                 <p class="user-roal">Amnesiac</p>
                             </div>
                         </div>
                     </li>
                     <li class="bold active"><a href="index.html" class="waves-effect waves-cyan"><i class="mdi-action-dashboard"></i> Home</a>
                     </li>
-                    <li class="bold"><a href="#" class="waves-effect waves-cyan"><i class="mdi-communication-email"></i> Configure<span class="new badge">4</span></a>
-                    </li>
-                    <li class="bold"><a href="chart.html" class="waves-effect waves-cyan"><i class="mdi-editor-insert-invitation"></i> Charts</a>
-                    </li>
                     <li class="no-padding">
                         <ul class="collapsible collapsible-accordion">
-                            <li class="bold"><a href="#" class="waves-effect waves-cyan"><i class="mdi-device-now-widgets"></i> Maintenance <span class="new badge"></span></a>
+                            <li class="bold"><a href="#" class="waves-effect waves-cyan"><i class="mdi-device-now-widgets"></i> Configure</a>
                             </li>
-                            <li class="bold"><a class="collapsible-header  waves-effect waves-cyan"><i class="mdi-editor-border-all"></i> Help</a>
+                            <li class="bold"><a class="collapsible-header  waves-effect waves-cyan"><i class="mdi-editor-border-all"></i> Reports</a>
                                 <div class="collapsible-body">
                                     <ul>
-                                        <li><a href="#">Basic Tables</a>
+                                        <li><a href="livechart.html">Live</a>
                                         </li>
-                                        <li><a href="#">Data Tables</a>
+                                        <li><a href="#">Static</a>
                                         </li>
                                     </ul>
                                 </div>
                             </li>
                         </ul>
+                    </li>
+                    <li class="bold"><a href="#" class="waves-effect waves-cyan"><i class="mdi-communication-email"></i> Maintenance</a>
+                    </li>
+                    <li class="bold"><a href="#" class="waves-effect waves-cyan"><i class="mdi-editor-insert-invitation"></i> Help</a>
                     </li>
                     <li class="li-hover">
                         <div class="divider"></div>
@@ -121,41 +106,46 @@
                     <li><a href="#"><i class="mdi-editor-format-color-fill"></i> Contact</a>
                     </li>
                 </ul>
-                <a href="#" data-activates="slide-out" class="sidebar-collapse btn-floating btn-medium waves-effect waves-light hide-on-large-only cyan"><i class="mdi-navigation-menu"></i></a>
             </aside>
             <!-- END LEFT SIDEBAR NAV-->
             <!-- //////////////////////////////////////////////////////////////////////////// -->
             <!-- START CONTENT -->
             <section id="content">
                 <!--start container-->
-                <div class="container" ng-controller="charts">
+                <div class="container" ng-controller="charts" ng-init="queryDB('static')">
                     <!-- //////////////////////////////////////////////////////////////////////////// -->
                 <div id="chartist-line-chart" class="section">
-                    <h4 class="header">012345678912.sar.q.ldavg-1</h4>
+                    <div class="row">
+                        <div class="col s6 m4 l2">
+                            <!-- <a ng-click="addLine()" class="waves-effect waves-light btn">Live graph</a> -->
+                            <input type="date" ng-model="fromdate">
+                        </div>
+                        <div class="col s6 m8 l2">
+                            <!-- <a ng-click="addLine()" class="waves-effect waves-light btn">Live graph</a> -->
+                            <input type="time" ng-model="fromtime">
+                        </div>
+                        <div class="col s12 m12 l1">
+                            <center><h5>TO</h5></center>
+                        </div>
+                        <div class="col s6 m4 l2">
+                            <!-- <a ng-click="addLine()" class="waves-effect waves-light btn">Live graph</a> -->
+                            <input type="date" ng-model="todate">
+                        </div>
+                        <div class="col s6 m8 l2">
+                            <!-- <a ng-click="addLine()" class="waves-effect waves-light btn">Live graph</a> -->
+                            <input type="time" ng-model="totime">
+                        </div>
+                        <div class="col s12 m12 l3">
+                            <a class="waves-effect waves-light btn indigo" ng-click="queryDB('static')">Graph</a>
+                            <a class="waves-effect waves-light btn indigo" ng-click="queryDB('csv')">CSV</a>
+                        </div>
+                    </div>
+                    <a class="waves-effect waves-light btn indigo" ng-click="queryDB('addLine')">Add replicated slabs</a>
                     <div class="row">
                         <div class="col s12 m12 l12">
+                            <!-- <a ng-click="addLine()" class="waves-effect waves-light btn">Live graph</a> -->
                             <div class="sample-chart-wrapper">
                                 <div  class="ct-chart ct-golden-section" id="chart1"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="chartist-line-chart" class="section">
-                    <h4 class="header">012345678912.sar.q.ldavg-5</h4>
-                    <div class="row">
-                        <div class="col s12 m12 l12">
-                            <div class="sample-chart-wrapper">
-                                <div  class="ct-chart ct-golden-section" id="chart2"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="chartist-line-chart" class="section">
-                    <h4 class="header">scale(sumSeries(012345678912.sar.d.*.wr_sec.rate),512)</h4>
-                    <div class="row">
-                        <div class="col s12 m12 l12">
-                            <div class="sample-chart-wrapper">
-                                <div  class="ct-chart ct-golden-section" id="chart3"></div>
                             </div>
                         </div>
                     </div>
@@ -171,18 +161,17 @@
     <!-- ================================================
     Scripts
     ================================================ -->
-    <script type="text/javascript" src="js/moment.js"></script>
     <!-- angularJS -->
     <script src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/highcharts.js"></script>
     <script type="text/javascript" src="build/app.js"></script>
     <!-- jQuery Library -->
     <script src="js/jquery.min.js"></script>
     <!--materialize js-->
-    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script type="text/javascript" src="js/materialize.js"></script>
     <!--scrollbar-->
-    <script type="text/javascript" src="plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-    <!-- chartjs -->
-    <script type="text/javascript" src="plugins/chartist-js/chartist.min.js"></script>
+    <script type="text/javascript" src="perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="js/plugins.js"></script>
 </body>
 
 </html>

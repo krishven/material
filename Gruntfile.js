@@ -2,7 +2,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		concat: {
 		    js: {
-		    	src: ['js/login.js', 'js/dashboard.js', 'js/charts.js'],
+		    	src: ['js/app.js','js/login.js', 'js/dashboard.js', 'js/charts.js', 'js/error.js'],
 		    	dest: 'build/app.js',
 		    },
 		    css: {
@@ -24,18 +24,17 @@ module.exports = function(grunt) {
 		  	},
 		},
 		connect: {
-    	server: {
-      		options: {
-        		port: 9000,
-        		base: '.',
-        		hostname: '0.0.0.0',
-        		protocol: 'http',
-        		livereload: true,
-        		open: true,
-      		}
-    	}
-  },
-
+	    	server: {
+	      		options: {
+	        		port: 9000,
+	        		base: '.',
+	        		hostname: '0.0.0.0',
+	        		protocol: 'http',
+	        		livereload: true,
+	        		open: true,
+	      		}
+    		}
+  		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-concat'); //To concatenate files

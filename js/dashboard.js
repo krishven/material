@@ -1,15 +1,27 @@
-app.controller('dashboard', function($scope, $interval, $http) {
+//controller for dashboard
+app.controller('dashboard', function($scope, $interval, $window, $http) {
+	//initialize result array which will hold dashboard response
+	$scope.result = {};
+
 	$scope.reason = false;
 	$scope.alarms = false;
 	$scope.storageOpt = false;
 	$scope.reclam = false;
-	$scope.temp = 'Yes';
 
-	$scope.callAtInterval = function() {
-        $scope.temp = Math.random().toString(36).substr(2, 5);
+	//pie charts global variables
+	var cloud, disk;
+
+	//functionping REST and try to get dashboard response
+	//update is the argument that differentiates between the first request and subsequent requests
+	$scope.getDashboard = function(update) {
+    	$http({
+			url: 'https://172.16.33.115:8443/cbapi/v1/dashboard', method: 'GET'
+		}).success(function (data, status, headers, config) {
+			$scope.displayDashboard(data.result, update);
+		}).error(function (data, status, headers, config) {
+			$window.location.href = 'error.html';
+		});
     }
-
-    $interval( function(){ $scope.callAtInterval(); }, 3000);
 
 	//Convert bytes in string to float
 	$scope.getColor = function(str) {
@@ -29,7 +41,7 @@ app.controller('dashboard', function($scope, $interval, $http) {
 	$scope.toStr = function(num) {
 		if(num > 1024) {
 			var ret = num/1024;
-			return ret + ' TB';
+			return  ret.toFixed(2) + ' TB';
 		}
 		else if(num < 1024)
 			return num + ' GB';
@@ -37,131 +49,128 @@ app.controller('dashboard', function($scope, $interval, $http) {
 			return num;
 	}
 
-	$scope.result = {
-		"cloudInformation": {
-			"cloudConnection": "Connected",
-			"cloudConnectionClass": "stateUnknown",
-			"cloudProvider": "Amazon S3",
-			"storageClass": "Standard"
-		},
-		"systemInformation": {
-			"applianceTime": "Wednesday 06:04:20 GMT",
-			"serviceUptime": "6 days, 2:54:43",
-			"systemUptime": "19 days, 14:25:22"
-		},
-		"serviceStateData": {
-			"blockedReason": "No data partition was found. Please shut down the VM and attach a second disk.",
-			"enabled": "true",
-			"readyState": "not ready",
-			"serviceState": "stopped",
-			"info": ""
-		},
-		"replicationInformation": {
-			"cloudSync": "0",
-			"latestReplicationBytes": "Storage Optimization service is not ready",
-			"replicationETA": "Storage Optimization service is not ready",
-			"serviceReady": "false"
-		},
-		"alarmsTriggered": [
-			{
-				"name": "Appliance Health",
-				"status": "Critical"
-			},
-			{
-				"name": "Storage Optimization Service",
-				"status": "Critical"
-			},
-			{
-				"name": "Storage Optimization Service Down",
-				"status": "Critical"
-			}
-		],
-		"storageOptimizationData": {
-			"rfsdEnabled": false,
-			"expandedData": null,
-			"dedupedData": null,
-			"dedupFactor": null
-		},
-		"storageAllocationData": {
-			"cloudFree": "10995116277760",
-			"cloudLicensedTotal": "10995116277761",
-			"cloudUsed": "-1",
-			"diskFree": "2098520064",
-			"diskUsed": "1003646977",
-			"diskTotal": "3102167040"
-		},
-		"garbageCollectionService": {
-			"gcProgress": "0",
-			"gcRunning": false
-		},
-		"fipsStatus": {
-			"fipsEnabled": false,
-			"fipsInfoMsg": ""
+	//object is the response from REST, update is the argument that differentiates between the first request and subsequent requests
+	$scope.displayDashboard = function(object, update) {
+		$scope.result = object;
+
+		if($scope.result.serviceStateData.blockedReason)
+			$scope.reason = true;
+		if($scope.result.alarmsTriggered.length != 0)
+			$scope.alarms = true;
+		if($scope.result.storageOptimizationData.rfsdEnabled == true)
+			$scope.storageOpt = true;
+		if($scope.result.garbageCollectionService.gcRunning == true)
+			$scope.reclam = true;	
+
+		//colours for displaying status red or green
+		$scope.serviceColor = $scope.getColor($scope.result.serviceStateData.serviceState);
+		$scope.readyColor = $scope.getColor($scope.result.serviceStateData.readyState);
+
+		//calculate all the stats in bytes to GB and TB
+		$scope.cloudTotal = $scope.convertBytes($scope.result.storageAllocationData.cloudLicensedTotal);
+		$scope.cloudUsed = $scope.convertBytes($scope.result.storageAllocationData.cloudUsed);
+		$scope.cloudFree = $scope.convertBytes($scope.result.storageAllocationData.cloudFree);
+		$scope.diskTotal = $scope.convertBytes($scope.result.storageAllocationData.diskTotal);
+		$scope.diskUsed = $scope.convertBytes($scope.result.storageAllocationData.diskUsed);
+		$scope.diskFree = $scope.convertBytes($scope.result.storageAllocationData.diskFree);
+		$scope.repBytes = $scope.convertBytes($scope.result.replicationInformation.cloudSync);
+		
+		//If update nad not the first request then just update the pie chart, no need to redraw it again
+		if(update) {
+			disk.series[0].data[0].update(parseFloat($scope.diskUsed));
+			disk.series[0].data[1].update(parseFloat($scope.diskFree));
+			cloud.series[0].data[0].update(parseFloat($scope.cloudUsed));
+			cloud.series[0].data[1].update(parseFloat($scope.cloudFree));
+		}
+		//else if the first request, create the pie charts
+		else {
+			cloud = new Highcharts.Chart({
+		        chart: {
+		        	renderTo: 'cloud',
+		        	type: 'pie'
+		      	},
+		      	colors: ['#3f51b5'],
+		      	title: {
+		        	text: 'Total '+ $scope.toStr($scope.cloudTotal),
+		        	verticalAlign: 'middle',
+		    		floating: true
+		      	},
+		      	tooltip: {
+				    formatter: function() {
+				        return this.point.name +' '+ $scope.toStr(this.y)
+				    }
+				},
+		      	plotOptions: {
+		        	pie: {
+		          		dataLabels: {
+		            		enabled: false
+			          	},
+			          	point: {
+			            	events: {
+				              	mouseOver: function() {
+				                	cloud.setTitle({text: this.name +' '+ $scope.toStr(this.y)});
+				              	},
+				              	mouseOut: function() {
+				                	cloud.setTitle({text: 'Total '+$scope.toStr($scope.cloudTotal)});
+				              	}
+			          	  	}
+			          	}
+		        	}
+		      	},
+		      	series: [{
+		            name: 'Cloud',
+		            data: [["Used", parseFloat($scope.cloudUsed)], ["Free", parseFloat($scope.cloudFree)]],
+		            size: '100%',
+		            innerSize: '50%'
+		        }]
+		    });
+
+		    disk = new Highcharts.Chart({
+		        chart: {
+		        	renderTo: 'disk',
+		        	type: 'pie'
+		      	},
+		      	title: {
+		        	text: 'Total '+$scope.toStr($scope.diskTotal),
+		        	verticalAlign: 'middle',
+		    		floating: true
+		      	},
+		      	tooltip: {
+				    formatter: function() {
+				        return this.point.name +' '+ $scope.toStr(this.y)
+				    }
+				},
+		      	plotOptions: {
+		        	pie: {
+		          		dataLabels: {
+		            		enabled: false
+			          	},
+			          	point: {
+			            	events: {
+				              	mouseOver: function() {
+				                	disk.setTitle({text: this.name +' '+ $scope.toStr(this.y)});
+				              	},
+				              	mouseOut: function() {
+				                	disk.setTitle({text: 'Total '+$scope.toStr($scope.diskTotal)});
+				              	}
+			          	  	}
+			          	}
+		        	}
+		      	},
+		      	series: [{
+		            name: 'Disk',
+		            data: [["Used", parseFloat($scope.diskUsed)], ["Free", parseFloat($scope.diskFree)]],
+		            size: '100%',
+		            innerSize: '50%'
+		        }]
+		    });
 		}
 	}
 
-	if($scope.result.serviceStateData.serviceState)
-		$scope.reason = true;
-	if($scope.result.alarmsTriggered)
-		$scope.alarms = true;
-	if($scope.result.storageOptimizationData.rfsdEnabled == true)
-		$scope.storageOpt = true;
-	if($scope.result.garbageCollectionService.gcRunning == true)
-		$scope.reclam = true;	
+	//the argument false specifies that this is NOT AN UPDATE i.e this is the first time the pie chart is being drawn
+	$scope.getDashboard(false);
 
-	$scope.serviceColor = $scope.getColor($scope.result.serviceStateData.serviceState);
-	$scope.readyColor = $scope.getColor($scope.result.serviceStateData.readyState);
-
-	$scope.cloudTotal = $scope.convertBytes($scope.result.storageAllocationData.cloudLicensedTotal);
-	$scope.cloudUsed = $scope.convertBytes($scope.result.storageAllocationData.cloudUsed);
-	$scope.cloudFree = $scope.convertBytes($scope.result.storageAllocationData.cloudFree);
-	$scope.diskTotal = $scope.convertBytes($scope.result.storageAllocationData.diskTotal);
-	$scope.diskUsed = $scope.convertBytes($scope.result.storageAllocationData.diskUsed);
-	$scope.diskFree = $scope.convertBytes($scope.result.storageAllocationData.diskFree);
-	$scope.repBytes = $scope.convertBytes($scope.result.replicationInformation.cloudSync);
-
-	if($scope.repBytes == 0)
-		$scope.repBytes = 'No data has been replicated to the cloud';
-
-	/*$scope.hello = function() {
-		$window.alert($scope.result.cloudInformation.cloudProvider);
-	};*/
-	
-	Morris.Donut({
-		colors: ['#0277bd','#81d4fa'],
-        element: 'cloud',
-        data: [{
-            label: 'Cloud Used',
-            value: $scope.cloudUsed
-        }, {
-            label: 'Cloud Free',
-            value: $scope.cloudFree
-        }],
-        formatter: function(y) {
-            return $scope.toStr(y);
-        }
-    });
-
-    Morris.Donut({
-    	colors: ['#a1887f','#bcaaa4'],
-        element: 'disk',
-        data: [{
-            label: 'Disk Used',
-            value: $scope.diskUsed
-        }, {
-            label: 'Disk Free',
-            value: $scope.diskFree
-        }],
-        formatter: function(y) {
-            return $scope.toStr(y);
-        }
-    });
-
-	/*$http({
-		url: 'http://10.192.5.98:1234/capi/v1/dashboard', method: 'GET'
-	}).success(function (data, status, headers, config) {
-		console.log('Success'+data.name); // Should log 'foo'
-	}).error(function (data, status, headers, config) {
-		console.log('Error');
-	});*/
+	//use $interval to query the REST dashboard repeatedly for every 3 seconds i.e 3000 ms
+	//the argument true specifies that the pie chart needs to be updated and not drawn again.
+	$interval(function(){ $scope.getDashboard(true); }, 3000);
 });

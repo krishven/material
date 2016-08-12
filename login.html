@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="msapplication-tap-highlight" content="no">
-<meta name="description" content="Materialize is a Material Design Admin Template,It's modern, responsive and based on Material Design by Google. ">
-<meta name="keywords" content="materialize, admin template, dashboard template, flat admin template, responsive admin template,">
 <title>AVA Login</title>
 
 <!-- Favicons-->
@@ -20,9 +18,9 @@
 
 <!-- CORE CSS-->
 <link href="build/styles.css" type="text/css" rel="stylesheet" media="screen,projection">
+<!-- <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection">
+<link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"> -->
 <link href="css/page-center.css" type="text/css" rel="stylesheet" media="screen,projection">
-<!-- <link href="css/scroller.css" type="text/css" rel="stylesheet" media="screen,projection">
-<link href="css/nprogress.css" type="text/css" rel="stylesheet" media="screen,projection"> -->
 
 </head>
 
@@ -37,7 +35,12 @@
           <p class="center login-form-text">AltaVault</p>
         </div>
       </div>
-      <div class="center" ng-show="loading">Loading...</div>
+      <div class="progress" ng-show="loading">
+        <div class="indeterminate"></div>
+      </div>
+      <div ng-show="errorMsg">
+        <h6 class="center">Invalid credentials! Try again!</h4>
+      </div>
       <div class="row margin">
         <div class="input-field col s12">
           <i class="mdi-social-person-outline prefix"></i>
@@ -78,26 +81,12 @@
 </div>
 
 <!-- angularJS -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+<script src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/highcharts.js"></script>
 <script type="text/javascript" src="build/app.js"></script>
-<!-- jQuery Library --> 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<!-- jQuery Library -->
+<script src="js/jquery.min.js"></script>
 <!--materialize js--> 
-<script type="text/javascript" src="js/materialize.min.js"></script> 
-<!--plugins.js - Some Specific JS codes for Plugin Settings--> 
-<!-- <script type="text/javascript" src="js/plugins.js"></script> -->
-<!-- Preloader-->
-<!-- <script type="text/javascript" src="js/nprogress.js"></script> 
-<script type="text/javascript" src="js/preloader.js"></script>  -->
-<!-- CustomSscroll-->
-<!-- <script type="text/javascript" src="js/scroller.js"></script> --> 
-
-<!-- <script type="text/javascript">
-// Initialize Scroller plugin
-$(function () {
-var $document_body = $('body');
-$document_body.scrollator();
-});
-</script> -->
+<script type="text/javascript" src="js/materialize.js"></script>
 </body>
 </html>
